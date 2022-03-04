@@ -1,0 +1,23 @@
+services:
+  nginx_gateway:
+    image: nginx
+    restart: always
+    container_name: 'nginx_gateway'
+    ports:
+      - '9000:80'
+    volumes:
+      - './nginx.conf:/etc/nginx/nginx.conf'
+  auth_svc:
+    build:
+      context: .
+      target: auth_service
+    container_name: 'auth_service'
+    ports:
+      - '9001:9001'
+  user_svc:
+    build:
+      context: .
+      target: user_service
+    container_name: 'user_service'
+    ports:
+      - '9002:9002'
