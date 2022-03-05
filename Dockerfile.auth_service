@@ -1,0 +1,21 @@
+# BUILD AUTH SERVICE
+FROM golang:1.17-alpine as build
+
+LABEL stage=build
+
+WORKDIR /auth
+
+COPY ./service/auth/main.go .
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o /auth_service /auth/main.go
+
+# DEPLOY AUTH SERVICE
+FROM alpine as prod
+
+WORKDIR /
+
+COPY --from=build /auth_service /auth_service
+
+EXPOSE 9001
+
+ENTRYPOINT ["/auth_service"]

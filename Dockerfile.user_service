@@ -1,0 +1,21 @@
+# BUILD USER SERVICE
+FROM golang:1.17-alpine as build
+
+LABEL stage=build
+
+WORKDIR /user
+
+COPY ./service/user/main.go .
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o /user_service /user/main.go
+
+# DEPLOY USER SERVICE
+FROM alpine as prod
+
+WORKDIR /
+
+COPY --from=build /user_service /user_service
+
+EXPOSE 9002
+
+ENTRYPOINT ["/user_service"]
